@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: gitstats-it
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:postgresql:16-alpine:///gitstats_test
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+
+scheduled-tasks:
+  threads: 15
+  queue-capacity: 100
+
+scheduled:
+  tasks:
+    polling:
+      interval: 1000
+
+project:
+  sync:
+    interval: 300000
+
+gitlab:
+  base-url: http://localhost:8089
+  private-token: test-token

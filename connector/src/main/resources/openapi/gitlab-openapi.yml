@@ -1,0 +1,323 @@
+openapi: 3.0.3
+info:
+  title: GitLab API
+  description: GitLab REST API for projects
+  version: v4
+servers:
+  - url: https://gitlab.cldx.io
+paths:
+  /api/v4/users/{id}:
+    get:
+      summary: Get single user
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: User not found
+  /api/v4/projects/{id}:
+    get:
+      summary: Get single project
+      operationId: getProject
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the project
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '404':
+          description: Project not found
+  /api/v4/projects/{id}/merge_requests:
+    get:
+      summary: Get merge requests
+      operationId: getMergeRequests
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the project
+          schema:
+            type: integer
+            format: int64
+        - name: page
+          in: query
+          required: false
+          description: Page number
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          required: false
+          description: Number of items per page
+          schema:
+            type: integer
+        - name: order_by
+          in: query
+          required: false
+          description: Order by field
+          schema:
+            type: string
+        - name: sort
+          in: query
+          required: false
+          description: Sort direction
+          schema:
+            type: string
+        - name: view
+          in: query
+          required: false
+          description: View
+          schema:
+            type: string
+        - name: pagination
+          in: query
+          required: false
+          description: Pagination type
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of merge requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MergeRequestResponse'
+  /api/v4/projects/{id}/merge_requests/{merge_request_iid}/changes:
+    get:
+      summary: Get merge request changes
+      operationId: getMergeRequestChanges
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the project
+          schema:
+            type: integer
+            format: int64
+        - name: merge_request_iid
+          in: path
+          required: true
+          description: The IID or ID of the merge request
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Merge request changes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeRequestChangesResponse'
+        '404':
+          description: Merge request changes not found
+  /api/v4/projects/{id}/merge_requests/{merge_request_iid}/discussions:
+    get:
+      summary: Get merge request discussions
+      operationId: getMergeRequestDiscussions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the project
+          schema:
+            type: integer
+            format: int64
+        - name: merge_request_iid
+          in: path
+          required: true
+          description: The IID or ID of the merge request
+          schema:
+            type: integer
+            format: int64
+        - name: page
+          in: query
+          required: false
+          description: Page number
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          required: false
+          description: Number of items per page
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of merge request discussions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DiscussionResponse'
+        '404':
+          description: Discussions not found
+components:
+  schemas:
+    ProjectResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        web_url:
+          type: string
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        name:
+          type: string
+        state:
+          type: string
+        bot:
+          type: boolean
+        avatar_url:
+          type: string
+        web_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    UserBasicResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        name:
+          type: string
+        state:
+          type: string
+        avatar_url:
+          type: string
+        web_url:
+          type: string
+    ChangeResponse:
+      type: object
+      properties:
+        old_path:
+          type: string
+        new_path:
+          type: string
+        a_mode:
+          type: string
+        b_mode:
+          type: string
+        new_file:
+          type: boolean
+        renamed_file:
+          type: boolean
+        deleted_file:
+          type: boolean
+        diff:
+          type: string
+    MergeRequestChangesResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        iid:
+          type: integer
+          format: int64
+        project_id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        state:
+          type: string
+        target_branch:
+          type: string
+        source_branch:
+          type: string
+        merged_at:
+          type: string
+          format: date-time
+        author:
+          $ref: '#/components/schemas/UserBasicResponse'
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChangeResponse'
+    DiscussionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        individual_note:
+          type: boolean
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteResponse'
+    NoteResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        resolvable:
+          type: boolean
+        resolved:
+          type: boolean
+        resolved_at:
+          type: string
+          format: date-time
+        author:
+          $ref: '#/components/schemas/UserBasicResponse'
+    MergeRequestResponse:
+      type: object
+      properties:
+        iid:
+          type: integer
+          format: int64
+        project_id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        state:
+          type: string
+        web_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
